@@ -1,4 +1,5 @@
-from bumpversion.functions import NumericFunction, ValuesFunction
+from .functions import NumericFunction, ValuesFunction
+
 
 class PartConfiguration(object):
     function_cls = NumericFunction

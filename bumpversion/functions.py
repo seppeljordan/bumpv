@@ -1,5 +1,4 @@
 import re
-import datetime
 
 
 class NumericFunction(object):
@@ -22,7 +21,7 @@ class NumericFunction(object):
 
         if first_value is not None:
             try:
-                part_prefix, part_numeric, part_suffix = self.FIRST_NUMERIC.search(
+                self.FIRST_NUMERIC.search(
                     first_value).groups()
             except AttributeError:
                 raise ValueError(
@@ -86,4 +85,3 @@ class ValuesFunction(object):
         except IndexError:
             raise ValueError(
                 "The part has already the maximum value among {} and cannot be bumped.".format(self._values))
-
