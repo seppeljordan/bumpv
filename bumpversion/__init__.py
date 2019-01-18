@@ -1,7 +1,6 @@
 import sys
 
 from .bumpversion import main
-from .utils import get_description
 
 __VERSION__ = '0.5.4-dev'
 

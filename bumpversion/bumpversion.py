@@ -9,7 +9,6 @@ import io
 from argparse import _AppendAction
 from configparser import RawConfigParser, NoOptionError
 from string import Formatter
-from datetime import datetime
 from difflib import unified_diff
 from io import StringIO
 
@@ -17,7 +16,14 @@ from .exceptions import (
     IncompleteVersionRepresenationException,
     MissingValueForSerializationException,
 )
-from .utils import get_logger, get_logger_list, kv_string, merge_dicts
+from .utils import (
+    get_logger,
+    get_logger_list,
+    kv_string,
+    merge_dicts,
+    prefixed_environ,
+    time_context
+)
 from .vcs import VCS, get_vcs
 from .version_part import VersionPart, NumericVersionPartConfiguration, ConfiguredVersionPartConfiguration
 
@@ -38,16 +44,6 @@ class DiscardDefaultIfSpecifiedAppendAction(_AppendAction):
 
         super(DiscardDefaultIfSpecifiedAppendAction, self).__call__(
                 parser, namespace, values, option_string=None)
-
-
-time_context = {
-    'now': datetime.now(),
-    'utcnow': datetime.utcnow(),
-}
-
-
-def prefixed_environ():
-    return dict((("${}".format(key), value) for key, value in os.environ.items()))
 
 
 class ConfiguredFile(object):
@@ -564,7 +560,7 @@ def main(original_args=None):
 
     assert type(known_args.serialize) == list
 
-    context = merge_dicts(time_context, prefixed_environ, vcs_info)
+    context = merge_dicts(time_context(), prefixed_environ(), vcs_info)
 
     try:
         vc = VersionConfig(
@@ -739,7 +735,7 @@ def main(original_args=None):
         "current_version": args.current_version,
         "new_version": args.new_version,
     }
-    vcs_context.update(time_context)
+    vcs_context.update(time_context())
     vcs_context.update(prefixed_environ())
 
     commit_message = args.message.format(**vcs_context)

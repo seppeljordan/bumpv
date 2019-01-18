@@ -1,4 +1,6 @@
 import logging
+import os
+from datetime import datetime
 
 
 def get_logger():
@@ -11,6 +13,17 @@ def get_logger_list():
 
 def kv_string(d):
     return ", ".join("{}={}".format(k, v) for k, v in sorted(d.items()))
+
+
+def prefixed_environ():
+    return dict((("${}".format(key), value) for key, value in os.environ.items()))
+
+
+def time_context():
+    return {
+        'now': datetime.now(),
+        'utcnow': datetime.utcnow(),
+    }
 
 
 def merge_dicts(*dicts):
