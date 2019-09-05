@@ -4,5 +4,5 @@ bin/
 include/
 lib/
 .Python
-bumpversion.egg-info/
+bumpv.egg-info/
 .pytest_cache

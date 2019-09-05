@@ -6,16 +6,16 @@ from .exceptions import WorkingDirectoryIsDirtyException
 from .utils import get_logger
 
 
-logger = get_logger()
+logger = get_logger(False)
 
 
-def get_vcs(defaults):
+def get_vcs(allow_dirty=False):
     for vcs in VCS:
         if vcs.is_usable():
             try:
                 vcs.assert_nondirty()
             except WorkingDirectoryIsDirtyException as e:
-                if not defaults['allow_dirty']:
+                if not allow_dirty:
                     logger.warn(f"{e.message}\n\nUse --allow-dirty to override this if you know what you're doing.")
                     raise
             return vcs

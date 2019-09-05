@@ -4,8 +4,8 @@ from .functions import NumericFunction, ValuesFunction
 class PartConfiguration(object):
     function_cls = NumericFunction
 
-    def __init__(self, *args, **kwds):
-        self.function = self.function_cls(*args, **kwds)
+    def __init__(self, *args, **kwargs):
+        self.function = self.function_cls(*args, **kwargs)
 
     @property
     def first_value(self):
@@ -20,6 +20,7 @@ class PartConfiguration(object):
 
 
 class ConfiguredVersionPartConfiguration(PartConfiguration):
+    # TODO: Remove?
     function_cls = ValuesFunction
 
 
@@ -28,7 +29,6 @@ class NumericVersionPartConfiguration(PartConfiguration):
 
 
 class VersionPart(object):
-
     """
     This class represents part of a version number. It contains a self.config
     object that rules how the part behaves when increased or reset.
@@ -59,7 +59,7 @@ class VersionPart(object):
         return self.value
 
     def __repr__(self):
-        return '<bumpversion.VersionPart:{}:{}>'.format(
+        return '<bumpv.VersionPart:{}:{}>'.format(
             self.config.__class__.__name__,
             self.value
         )

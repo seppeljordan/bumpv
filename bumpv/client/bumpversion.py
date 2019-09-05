@@ -19,15 +19,15 @@ from .exceptions import (
 from .utils import (
     get_logger,
     get_logger_list,
-    kv_string,
     merge_dicts,
     prefixed_environ,
     time_context
 )
 from .vcs import VCS, get_vcs
-from .version_part import VersionPart, NumericVersionPartConfiguration, ConfiguredVersionPartConfiguration
+from .versioning import VersionPart, NumericVersionPartConfiguration, ConfiguredVersionPartConfiguration
+from .versioning.functions import kv_string
 
-logger = get_logger()
+logger = get_logger(False)
 logger_list = get_logger_list()
 
 
@@ -136,7 +136,7 @@ class ConfiguredFile(object):
         return self.path
 
     def __repr__(self):
-        return '<bumpversion.ConfiguredFile:{}>'.format(self.path)
+        return '<bumpv.ConfiguredFile:{}>'.format(self.path)
 
 
 class Version(object):
@@ -155,7 +155,7 @@ class Version(object):
         return iter(self._values)
 
     def __repr__(self):
-        return '<bumpversion.Version:{}>'.format(kv_string(self._values))
+        return '<bumpv.Version:{}>'.format(kv_string(self._values))
 
     def bump(self, part_name, order):
         bumped = False
@@ -361,7 +361,6 @@ def split_args_in_optional_and_positional(args):
 
 
 def main(original_args=None):
-
     positionals, args = split_args_in_optional_and_positional(
       sys.argv[1:] if original_args is None else original_args
     )
@@ -369,7 +368,7 @@ def main(original_args=None):
     if len(positionals[1:]) > 2:
         warnings.warn(
             "Giving multiple files on the command line will be deprecated,"
-            "please use [bumpversion:file:...] in a config file.",
+            "please use [bumpv:file:...] in a config file.",
             PendingDeprecationWarning
         )
 
@@ -378,7 +377,7 @@ def main(original_args=None):
     parser1.add_argument(
         '--config-file', metavar='FILE',
         default=argparse.SUPPRESS, required=False,
-        help='Config file to read most of the variables from (default: .bumpversion.cfg)')
+        help='Config file to read most of the variables from (default: .bumpv.cfg)')
 
     parser1.add_argument(
         '--verbose', action='count', default=0,
@@ -432,17 +431,17 @@ def main(original_args=None):
     # don't transform keys to lowercase (which would be the default)
     config.optionxform = lambda option: option
 
-    config.add_section('bumpversion')
+    config.add_section('bumpv')
 
     explicit_config = hasattr(known_args, 'config_file')
 
     if explicit_config:
         config_file = known_args.config_file
-    elif not os.path.exists('.bumpversion.cfg') and \
+    elif not os.path.exists('.bumpv.cfg') and \
             os.path.exists('setup.cfg'):
         config_file = 'setup.cfg'
     else:
-        config_file = '.bumpversion.cfg'
+        config_file = '.bumpv.cfg'
 
     config_file_exists = os.path.exists(config_file)
 
@@ -460,17 +459,17 @@ def main(original_args=None):
         log_config = StringIO()
         config.write(log_config)
 
-        if 'files' in dict(config.items("bumpversion")):
+        if 'files' in dict(config.items("bumpv")):
             warnings.warn(
-                "'files =' configuration is will be deprecated, please use [bumpversion:file:...]",
+                "'files =' configuration is will be deprecated, please use [bumpv:file:...]",
                 PendingDeprecationWarning
             )
 
-        defaults.update(dict(config.items("bumpversion")))
+        defaults.update(dict(config.items("bumpv")))
 
         for listvaluename in ("serialize",):
             try:
-                value = config.get("bumpversion", listvaluename)
+                value = config.get("bumpv", listvaluename)
                 defaults[listvaluename] = list(filter(None, (x.strip() for x in value.splitlines())))
             except NoOptionError:
                 pass  # no default value then ;)
@@ -478,13 +477,13 @@ def main(original_args=None):
         for boolvaluename in ("commit", "tag", "dry_run"):
             try:
                 defaults[boolvaluename] = config.getboolean(
-                    "bumpversion", boolvaluename)
+                    "bumpv", boolvaluename)
             except NoOptionError:
                 pass  # no default value then ;)
 
         for section_name in config.sections():
 
-            section_name_match = re.compile("^bumpversion:(file|part):(.+)").match(section_name)
+            section_name_match = re.compile("^bumpv:(file|part):(.+)").match(section_name)
 
             if not section_name_match:
                 continue
@@ -515,10 +514,10 @@ def main(original_args=None):
                 section_config['part_configs'] = part_configs
 
                 if 'parse' not in section_config:
-                    section_config['parse'] = defaults.get("parse", '(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)')
+                    section_config['parse'] = defaults.get("parse", '(?P<_major>\d+)\.(?P<_minor>\d+)\.(?P<_patch>\d+)')
 
                 if 'serialize' not in section_config:
-                    section_config['serialize'] = defaults.get('serialize', [str('{major}.{minor}.{patch}')])
+                    section_config['serialize'] = defaults.get('serialize', [str('{_major}.{_minor}.{_patch}')])
 
                 if 'search' not in section_config:
                     section_config['search'] = defaults.get("search", '{current_version}')
@@ -535,18 +534,18 @@ def main(original_args=None):
         else:
             logger.info(message)
 
-    parser2 = argparse.ArgumentParser(prog='bumpversion', add_help=False, parents=[parser1])
+    parser2 = argparse.ArgumentParser(prog='bumpv', add_help=False, parents=[parser1])
     parser2.set_defaults(**defaults)
 
     parser2.add_argument('--current-version', metavar='VERSION',
                          help='Version that needs to be updated', required=False)
     parser2.add_argument('--parse', metavar='REGEX',
                          help='Regex parsing the version string',
-                         default=defaults.get("parse", '(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)'))
+                         default=defaults.get("parse", '(?P<_major>\d+)\.(?P<_minor>\d+)\.(?P<_patch>\d+)'))
     parser2.add_argument('--serialize', metavar='FORMAT',
                          action=DiscardDefaultIfSpecifiedAppendAction,
                          help='How to format what is parsed back to a version',
-                         default=defaults.get("serialize", [str('{major}.{minor}.{patch}')]))
+                         default=defaults.get("serialize", [str('{_major}.{_minor}.{_patch}')]))
     parser2.add_argument('--search', metavar='SEARCH',
                          help='Template for complete string to search',
                          default=defaults.get("search", '{current_version}'))
@@ -592,8 +591,8 @@ def main(original_args=None):
             logger.info("Opportunistic finding of new_version failed")
 
     parser3 = argparse.ArgumentParser(
-        prog='bumpversion',
-        description="bumpversion",
+        prog='bumpv',
+        description="bumpv",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         conflict_handler='resolve',
         parents=[parser2],
@@ -673,14 +672,14 @@ def main(original_args=None):
 
     commit_files = [f.path for f in files]
 
-    config.set('bumpversion', 'new_version', args.new_version)
+    config.set('bumpv', 'new_version', args.new_version)
 
-    for key, value in config.items('bumpversion'):
+    for key, value in config.items('bumpv'):
         logger_list.info("{}={}".format(key, value))
 
-    config.remove_option('bumpversion', 'new_version')
+    config.remove_option('bumpv', 'new_version')
 
-    config.set('bumpversion', 'current_version', args.new_version)
+    config.set('bumpv', 'current_version', args.new_version)
 
     new_config = StringIO()
 

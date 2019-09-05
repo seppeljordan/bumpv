@@ -12,11 +12,11 @@
 #
 # import pytest
 #
-# import bumpversion
+# import bumpv
 #
-# from bumpversion import main, DESCRIPTION
-# from bumpversion.bumpversion import split_args_in_optional_and_positional, RawConfigParser
-# from bumpversion.exceptions import WorkingDirectoryIsDirtyException
+# from bumpv import main, DESCRIPTION
+# from bumpv.bumpv import split_args_in_optional_and_positional, RawConfigParser
+# from bumpv.exceptions import WorkingDirectoryIsDirtyException
 #
 # SUBPROCESS_ENV = dict(
 #     list(environ.items()) + [(b'HGENCODING', b'utf-8')]
@@ -37,7 +37,7 @@
 # )
 #
 #
-# @pytest.fixture(params=['.bumpversion.cfg', 'setup.cfg'])
+# @pytest.fixture(params=['.bumpv.cfg', 'setup.cfg'])
 # def configfile(request):
 #     return request.param
 #
@@ -94,7 +94,7 @@
 # optional arguments:
 #   -h, --help            show this help message and exit
 #   --config-file FILE    Config file to read most of the variables from
-#                         (default: .bumpversion.cfg)
+#                         (default: .bumpv.cfg)
 #   --verbose             Print verbose logging to stderr (default: 0)
 #   --list                List machine readable information (default: False)
 #   --allow-dirty         Don't abort if working directory is dirty (default:
@@ -143,14 +143,14 @@
 #     tmpdir.chdir()
 #
 #     try:
-#         out = check_output('bumpversion --help', shell=True, stderr=subprocess.STDOUT).decode('utf-8')
+#         out = check_output('bumpv --help', shell=True, stderr=subprocess.STDOUT).decode('utf-8')
 #     except subprocess.CalledProcessError as e:
 #         out = e.output
 #
-#     if not 'usage: bumpversion [-h]' in out:
+#     if not 'usage: bumpv [-h]' in out:
 #         print(out)
 #
-#     assert 'usage: bumpversion [-h]' in out
+#     assert 'usage: bumpv [-h]' in out
 #
 # @pytest.mark.parametrize(("vcs"), [xfail_if_no_git("git"), xfail_if_no_hg("hg")])
 # def test_regression_help_in_workdir(tmpdir, capsys, vcs):
@@ -177,7 +177,7 @@
 #
 # def test_defaults_in_usage_with_config(tmpdir, capsys):
 #     tmpdir.chdir()
-#     tmpdir.join("mydefaults.cfg").write("""[bumpversion]
+#     tmpdir.join("mydefaults.cfg").write("""[bumpv]
 # current_version: 18
 # new_version: 19
 # files: file1 file2 file3""")
@@ -216,7 +216,7 @@
 #
 # def test_config_file(tmpdir):
 #     tmpdir.join("file1").write("0.9.34")
-#     tmpdir.join("mybumpconfig.cfg").write("""[bumpversion]
+#     tmpdir.join("mybumpconfig.cfg").write("""[bumpv]
 # current_version: 0.9.34
 # new_version: 0.9.35
 # files: file1""")
@@ -229,7 +229,7 @@
 #
 # def test_default_config_files(tmpdir, configfile):
 #     tmpdir.join("file2").write("0.10.2")
-#     tmpdir.join(configfile).write("""[bumpversion]
+#     tmpdir.join(configfile).write("""[bumpv]
 # current_version: 0.10.2
 # new_version: 0.10.3
 # files: file2""")
@@ -242,11 +242,11 @@
 #
 # def test_multiple_config_files(tmpdir):
 #     tmpdir.join("file2").write("0.10.2")
-#     tmpdir.join("setup.cfg").write("""[bumpversion]
+#     tmpdir.join("setup.cfg").write("""[bumpv]
 # current_version: 0.10.2
 # new_version: 0.10.3
 # files: file2""")
-#     tmpdir.join(".bumpversion.cfg").write("""[bumpversion]
+#     tmpdir.join(".bumpv.cfg").write("""[bumpv]
 # current_version: 0.10.2
 # new_version: 0.10.4
 # files: file2""")
@@ -259,7 +259,7 @@
 #
 # def test_config_file_is_updated(tmpdir):
 #     tmpdir.join("file3").write("0.0.13")
-#     tmpdir.join(".bumpversion.cfg").write("""[bumpversion]
+#     tmpdir.join(".bumpv.cfg").write("""[bumpv]
 # current_version: 0.0.13
 # new_version: 0.0.14
 # files: file3
@@ -268,18 +268,18 @@
 #     tmpdir.chdir()
 #     main(['patch', '--verbose'])
 #
-#     assert """[bumpversion]
+#     assert """[bumpv]
 # current_version = 0.0.14
 # files = file3
 #
-# """ == tmpdir.join(".bumpversion.cfg").read()
+# """ == tmpdir.join(".bumpv.cfg").read()
 #
 #
 # @pytest.mark.parametrize(("vcs"), [xfail_if_no_git("git"), xfail_if_no_hg("hg")])
 # def test_dry_run(tmpdir, vcs):
 #     tmpdir.chdir()
 #
-#     config = """[bumpversion]
+#     config = """[bumpv]
 # current_version = 0.12.0
 # files = file4
 # tag = True
@@ -290,16 +290,16 @@
 #     version = "0.12.0"
 #
 #     tmpdir.join("file4").write(version)
-#     tmpdir.join(".bumpversion.cfg").write(config)
+#     tmpdir.join(".bumpv.cfg").write(config)
 #
 #     check_call([vcs, "init"])
 #     check_call([vcs, "add", "file4"])
-#     check_call([vcs, "add", ".bumpversion.cfg"])
+#     check_call([vcs, "add", ".bumpv.cfg"])
 #     check_call([vcs, "commit", "-m", "initial commit"])
 #
 #     main(['patch', '--dry-run'])
 #
-#     assert config == tmpdir.join(".bumpversion.cfg").read()
+#     assert config == tmpdir.join(".bumpv.cfg").read()
 #     assert version == tmpdir.join("file4").read()
 #
 #     vcs_log = check_output([vcs, "log"]).decode('utf-8')
@@ -335,7 +335,7 @@
 #     tmpdir.join("file12").write("ZZZ8;0;0")
 #     tmpdir.chdir()
 #
-#     tmpdir.join(".bumpversion.cfg").write("""[bumpversion]
+#     tmpdir.join(".bumpv.cfg").write("""[bumpv]
 # files = file12
 # current_version = ZZZ8;0;0
 # serialize = ZZZ{spam};{garlg};{slurp}
@@ -368,7 +368,7 @@
 #     check_call([vcs, "add", "dirty"])
 #
 #     with pytest.raises(WorkingDirectoryIsDirtyException):
-#         with mock.patch("bumpversion.logger") as logger:
+#         with mock.patch("bumpv.logger") as logger:
 #             main(['patch', '--current-version', '1', '--new-version', '2', 'file7'])
 #
 #     actual_log ="\n".join(_mock_calls_to_string(logger)[4:])
@@ -439,7 +439,7 @@
 # def test_commit_and_tag_with_configfile(tmpdir, vcs):
 #     tmpdir.chdir()
 #
-#     tmpdir.join(".bumpversion.cfg").write("""[bumpversion]\ncommit = True\ntag = True""")
+#     tmpdir.join(".bumpv.cfg").write("""[bumpv]\ncommit = True\ntag = True""")
 #
 #     check_call([vcs, "init"])
 #     tmpdir.join("VERSION").write("48.1.1")
@@ -472,15 +472,15 @@
 #
 #
 # @pytest.mark.parametrize(("vcs,config"), [
-#     xfail_if_no_git(("git", """[bumpversion]\ncommit = True""")),
-#     xfail_if_no_hg(("hg",  """[bumpversion]\ncommit = True""")),
-#     xfail_if_no_git(("git", """[bumpversion]\ncommit = True\ntag = False""")),
-#     xfail_if_no_hg(("hg",  """[bumpversion]\ncommit = True\ntag = False""")),
+#     xfail_if_no_git(("git", """[bumpv]\ncommit = True""")),
+#     xfail_if_no_hg(("hg",  """[bumpv]\ncommit = True""")),
+#     xfail_if_no_git(("git", """[bumpv]\ncommit = True\ntag = False""")),
+#     xfail_if_no_hg(("hg",  """[bumpv]\ncommit = True\ntag = False""")),
 # ])
 # def test_commit_and_not_tag_with_configfile(tmpdir, vcs, config):
 #     tmpdir.chdir()
 #
-#     tmpdir.join(".bumpversion.cfg").write(config)
+#     tmpdir.join(".bumpv.cfg").write(config)
 #
 #     check_call([vcs, "init"])
 #     tmpdir.join("VERSION").write("48.1.1")
@@ -506,7 +506,7 @@
 # def test_commit_explicitly_false(tmpdir, vcs):
 #     tmpdir.chdir()
 #
-#     tmpdir.join(".bumpversion.cfg").write("""[bumpversion]
+#     tmpdir.join(".bumpv.cfg").write("""[bumpv]
 # current_version: 10.0.0
 # commit = False
 # tag = False""")
@@ -531,7 +531,7 @@
 # def test_commit_configfile_true_cli_false_override(tmpdir, vcs):
 #     tmpdir.chdir()
 #
-#     tmpdir.join(".bumpversion.cfg").write("""[bumpversion]
+#     tmpdir.join(".bumpv.cfg").write("""[bumpv]
 # current_version: 27.0.0
 # commit = True""")
 #
@@ -590,7 +590,7 @@
 #     tmpdir.join("updated_also_in_config_file").write("14.6.0")
 #     tmpdir.chdir()
 #
-#     tmpdir.join(".bumpversion.cfg").write("""[bumpversion]""")
+#     tmpdir.join(".bumpv.cfg").write("""[bumpv]""")
 #
 #     check_call(["git", "init"])
 #     check_call(["git", "add", "updated_also_in_config_file"])
@@ -606,7 +606,7 @@
 #          ])
 #
 #     assert '14.6.1' == tmpdir.join("updated_also_in_config_file").read()
-#     assert '14.6.1' in tmpdir.join(".bumpversion.cfg").read()
+#     assert '14.6.1' in tmpdir.join(".bumpv.cfg").read()
 #
 #
 # @pytest.mark.parametrize(("vcs"), [xfail_if_no_git("git")])
@@ -715,7 +715,7 @@
 #     check_call([vcs, "add", "VERSION"])
 #     check_call([vcs, "commit", "-m", "initial commit"])
 #
-#     tmpdir.join(".bumpversion.cfg").write("""[bumpversion]
+#     tmpdir.join(".bumpv.cfg").write("""[bumpv]
 # current_version: 400.0.0
 # new_version: 401.0.0
 # commit: True
@@ -750,18 +750,18 @@
 #     check_call([vcs, "add", "VERSION"])
 #     check_call([vcs, "commit", "-m", "initial commit"])
 #
-#     initial_config = """[bumpversion]
+#     initial_config = """[bumpv]
 # current_version = 500.0.0
 # commit = True
 # message = Nová verze: {current_version} ☃, {new_version} ☀
 #
 # """
 #
-#     tmpdir.join(".bumpversion.cfg").write(initial_config.encode('utf-8'), mode='wb')
+#     tmpdir.join(".bumpv.cfg").write(initial_config.encode('utf-8'), mode='wb')
 #     main(['major', 'VERSION'])
 #     log = check_output([vcs, "log", "-p"])
 #     expected_new_config = initial_config.replace('500', '501')
-#     assert expected_new_config.encode('utf-8') == tmpdir.join(".bumpversion.cfg").read(mode='rb')
+#     assert expected_new_config.encode('utf-8') == tmpdir.join(".bumpv.cfg").read(mode='rb')
 #
 #
 # @pytest.mark.parametrize(("vcs"), [xfail_if_no_git("git"), xfail_if_no_hg("hg")])
@@ -772,13 +772,13 @@
 #     check_call([vcs, "add", "VERSION"])
 #     check_call([vcs, "commit", "-m", "initial commit"])
 #
-#     initial_config = """[bumpversion]
+#     initial_config = """[bumpv]
 # current_version = 10.10.0
 # commit = True
 # message = [{now}] [{utcnow} {utcnow:%YXX%mYY%d}]
 #
 # """
-#     tmpdir.join(".bumpversion.cfg").write(initial_config)
+#     tmpdir.join(".bumpv.cfg").write(initial_config)
 #
 #     main(['major', 'VERSION'])
 #
@@ -864,7 +864,7 @@
 #     tmpdir.join("fileD").write("0.6")
 #     tmpdir.chdir()
 #
-#     tmpdir.join(".bumpversion.cfg").write("""[bumpversion]
+#     tmpdir.join(".bumpv.cfg").write("""[bumpv]
 # files = fileD
 # current_version = 0.6
 # serialize =
@@ -883,13 +883,13 @@
 #
 #     tmpdir.join("blargh.txt").write("1.0.0")
 #
-#     with mock.patch("bumpversion.logger") as logger:
+#     with mock.patch("bumpv.logger") as logger:
 #         main(['--verbose', '--verbose', '--current-version', '1.0.0', 'patch', 'blargh.txt'])
 #
 #     actual_log ="\n".join(_mock_calls_to_string(logger)[4:])
 #
 #     EXPECTED_LOG = dedent("""
-#         info|Could not read config file at .bumpversion.cfg|
+#         info|Could not read config file at .bumpv.cfg|
 #         info|Parsing version '1.0.0' using regexp '(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)'|
 #         info|Parsed the following values: major=1, minor=0, patch=0|
 #         info|Attempting to increment part 'patch'|
@@ -905,8 +905,8 @@
 #         @@ -1 +1 @@
 #         -1.0.0
 #         +1.0.1|
-#         info|Would write to config file .bumpversion.cfg:|
-#         info|[bumpversion]
+#         info|Would write to config file .bumpv.cfg:|
+#         info|[bumpv]
 #         current_version = 1.0.1
 #
 #         |
@@ -917,21 +917,21 @@
 # def test_log_parse_doesnt_parse_current_version(tmpdir):
 #     tmpdir.chdir()
 #
-#     with mock.patch("bumpversion.logger") as logger:
+#     with mock.patch("bumpv.logger") as logger:
 #         main(['--parse', 'xxx', '--current-version', '12', '--new-version', '13', 'patch'])
 #
 #     actual_log ="\n".join(_mock_calls_to_string(logger)[4:])
 #
 #     EXPECTED_LOG = dedent("""
-#         info|Could not read config file at .bumpversion.cfg|
+#         info|Could not read config file at .bumpv.cfg|
 #         info|Parsing version '12' using regexp 'xxx'|
 #         warn|Evaluating 'parse' option: 'xxx' does not parse current version '12'|
 #         info|Parsing version '13' using regexp 'xxx'|
 #         warn|Evaluating 'parse' option: 'xxx' does not parse current version '13'|
 #         info|New version will be '13'|
 #         info|Asserting files  contain the version string:|
-#         info|Would write to config file .bumpversion.cfg:|
-#         info|[bumpversion]
+#         info|Would write to config file .bumpv.cfg:|
+#         info|[bumpv]
 #         current_version = 13
 #
 #         |
@@ -943,13 +943,13 @@
 #     tmpdir.chdir()
 #
 #     with pytest.raises(SystemExit):
-#         with mock.patch("bumpversion.logger") as logger:
+#         with mock.patch("bumpv.logger") as logger:
 #             main(['--parse', '*kittens*', '--current-version', '12', '--new-version', '13', 'patch'])
 #
 #     actual_log ="\n".join(_mock_calls_to_string(logger)[4:])
 #
 #     EXPECTED_LOG = dedent("""
-#         info|Could not read config file at .bumpversion.cfg|
+#         info|Could not read config file at .bumpv.cfg|
 #         error|--parse '*kittens*' is not a valid regex|
 #     """).strip()
 #
@@ -959,8 +959,8 @@
 #     tmpdir.join("fileE").write("0.4")
 #     tmpdir.chdir()
 #
-#     tmpdir.join(".bumpversion.cfg").write(dedent("""
-#         [bumpversion]
+#     tmpdir.join(".bumpv.cfg").write(dedent("""
+#         [bumpv]
 #         files = fileE
 #         current_version = 0.4
 #         serialize =
@@ -969,13 +969,13 @@
 #         parse = (?P<major>\d+)\.(?P<minor>\d+)(\.(?P<patch>\d+))?
 #         """).strip())
 #
-#     with mock.patch("bumpversion.logger") as logger:
+#     with mock.patch("bumpv.logger") as logger:
 #         main(['patch'])
 #
 #     # beware of the trailing space (" ") after "serialize =":
 #     EXPECTED_LOG = dedent("""
-#         info|Reading config file .bumpversion.cfg:|
-#         info|[bumpversion]
+#         info|Reading config file .bumpv.cfg:|
+#         info|[bumpv]
 #         files = fileE
 #         current_version = 0.4
 #         serialize =
@@ -997,8 +997,8 @@
 #         @@ -1 +1 @@
 #         -0.4
 #         +0.4.1|
-#         info|Writing to config file .bumpversion.cfg:|
-#         info|[bumpversion]
+#         info|Writing to config file .bumpv.cfg:|
+#         info|[bumpv]
 #         files = fileE
 #         current_version = 0.4.1
 #         serialize =
@@ -1019,8 +1019,8 @@
 #     tmpdir.join("dont_touch_me.txt").write("0.8")
 #     tmpdir.chdir()
 #
-#     tmpdir.join(".bumpversion.cfg").write(dedent("""
-#         [bumpversion]
+#     tmpdir.join(".bumpv.cfg").write(dedent("""
+#         [bumpv]
 #         files = dont_touch_me.txt
 #         current_version = 0.8
 #         commit = True
@@ -1035,13 +1035,13 @@
 #     check_call([vcs, "add", "dont_touch_me.txt"])
 #     check_call([vcs, "commit", "-m", "initial commit"])
 #
-#     with mock.patch("bumpversion.logger") as logger:
+#     with mock.patch("bumpv.logger") as logger:
 #         main(['patch', '--dry-run'])
 #
 #     # beware of the trailing space (" ") after "serialize =":
 #     EXPECTED_LOG = dedent("""
-#         info|Reading config file .bumpversion.cfg:|
-#         info|[bumpversion]
+#         info|Reading config file .bumpv.cfg:|
+#         info|[bumpv]
 #         files = dont_touch_me.txt
 #         current_version = 0.8
 #         commit = True
@@ -1066,8 +1066,8 @@
 #         @@ -1 +1 @@
 #         -0.8
 #         +0.8.1|
-#         info|Would write to config file .bumpversion.cfg:|
-#         info|[bumpversion]
+#         info|Would write to config file .bumpv.cfg:|
+#         info|[bumpv]
 #         files = dont_touch_me.txt
 #         current_version = 0.8.1
 #         commit = True
@@ -1080,7 +1080,7 @@
 #         |
 #         info|Would prepare Git commit|
 #         info|Would add changes in file 'dont_touch_me.txt' to Git|
-#         info|Would add changes in file '.bumpversion.cfg' to Git|
+#         info|Would add changes in file '.bumpv.cfg' to Git|
 #         info|Would commit to Git with message 'Bump version: 0.8 \u2192 0.8.1'|
 #         info|Would tag 'v0.8.1' in Git|
 #         """).strip()
@@ -1098,8 +1098,8 @@
 #     tmpdir.join("please_touch_me.txt").write("0.3.3")
 #     tmpdir.chdir()
 #
-#     tmpdir.join(".bumpversion.cfg").write(dedent("""
-#         [bumpversion]
+#     tmpdir.join(".bumpv.cfg").write(dedent("""
+#         [bumpv]
 #         files = please_touch_me.txt
 #         current_version = 0.3.3
 #         commit = False
@@ -1110,13 +1110,13 @@
 #     check_call([vcs, "add", "please_touch_me.txt"])
 #     check_call([vcs, "commit", "-m", "initial commit"])
 #
-#     with mock.patch("bumpversion.logger") as logger:
+#     with mock.patch("bumpv.logger") as logger:
 #         main(['patch'])
 #
 #     # beware of the trailing space (" ") after "serialize =":
 #     EXPECTED_LOG = dedent("""
-#         info|Reading config file .bumpversion.cfg:|
-#         info|[bumpversion]
+#         info|Reading config file .bumpv.cfg:|
+#         info|[bumpv]
 #         files = please_touch_me.txt
 #         current_version = 0.3.3
 #         commit = False
@@ -1136,8 +1136,8 @@
 #         @@ -1 +1 @@
 #         -0.3.3
 #         +0.3.4|
-#         info|Writing to config file .bumpversion.cfg:|
-#         info|[bumpversion]
+#         info|Writing to config file .bumpv.cfg:|
+#         info|[bumpv]
 #         files = please_touch_me.txt
 #         current_version = 0.3.4
 #         commit = False
@@ -1146,7 +1146,7 @@
 #         |
 #         info|Would prepare Git commit|
 #         info|Would add changes in file 'please_touch_me.txt' to Git|
-#         info|Would add changes in file '.bumpversion.cfg' to Git|
+#         info|Would add changes in file '.bumpv.cfg' to Git|
 #         info|Would commit to Git with message 'Bump version: 0.3.3 \u2192 0.3.4'|
 #         info|Would tag 'v0.3.4' in Git|
 #         """).strip()
@@ -1164,8 +1164,8 @@
 #     tmpdir.join("please_list_me.txt").write("0.5.5")
 #     tmpdir.chdir()
 #
-#     tmpdir.join(".bumpversion.cfg").write(dedent("""
-#         [bumpversion]
+#     tmpdir.join(".bumpv.cfg").write(dedent("""
+#         [bumpv]
 #         files = please_list_me.txt
 #         current_version = 0.5.5
 #         commit = False
@@ -1176,7 +1176,7 @@
 #     check_call([vcs, "add", "please_list_me.txt"])
 #     check_call([vcs, "commit", "-m", "initial commit"])
 #
-#     with mock.patch("bumpversion.logger_list") as logger:
+#     with mock.patch("bumpv.logger_list") as logger:
 #         main(['--list', 'patch'])
 #
 #     EXPECTED_LOG = dedent("""
@@ -1199,8 +1199,8 @@
 #     tmpdir.join("please_dont_list_me.txt").write("0.5.5")
 #     tmpdir.chdir()
 #
-#     tmpdir.join(".bumpversion.cfg").write(dedent("""
-#         [bumpversion]
+#     tmpdir.join(".bumpv.cfg").write(dedent("""
+#         [bumpv]
 #         files = please_dont_list_me.txt
 #         current_version = 0.5.5
 #         commit = False
@@ -1212,7 +1212,7 @@
 #     check_call([vcs, "commit", "-m", "initial commit"])
 #
 #     out = check_output(
-#         'bumpversion patch; exit 0',
+#         'bumpv patch; exit 0',
 #         shell=True,
 #         stderr=subprocess.STDOUT
 #     ).decode('utf-8')
@@ -1223,8 +1223,8 @@
 #     tmpdir.join("with_prereleases.txt").write("1.5.dev")
 #     tmpdir.chdir()
 #
-#     tmpdir.join(".bumpversion.cfg").write(dedent("""
-#         [bumpversion]
+#     tmpdir.join(".bumpv.cfg").write(dedent("""
+#         [bumpv]
 #         files = with_prereleases.txt
 #         current_version = 1.5.dev
 #         parse = (?P<major>\d+)\.(?P<minor>\d+)(\.(?P<release>[a-z]+))?
@@ -1232,7 +1232,7 @@
 #           {major}.{minor}.{release}
 #           {major}.{minor}
 #
-#         [bumpversion:part:release]
+#         [bumpv:part:release]
 #         optional_value = gamma
 #         values =
 #           dev
@@ -1252,22 +1252,22 @@
 #     tmpdir.join("optional_value_fromdoc.txt").write("1.alpha")
 #     tmpdir.chdir()
 #
-#     tmpdir.join(".bumpversion.cfg").write(dedent("""
-#       [bumpversion]
+#     tmpdir.join(".bumpv.cfg").write(dedent("""
+#       [bumpv]
 #       current_version = 1.alpha
 #       parse = (?P<num>\d+)(\.(?P<release>.*))?(\.)?
 #       serialize =
 #         {num}.{release}
 #         {num}
 #
-#       [bumpversion:part:release]
+#       [bumpv:part:release]
 #       optional_value = gamma
 #       values =
 #         alpha
 #         beta
 #         gamma
 #
-#       [bumpversion:file:optional_value_fromdoc.txt]
+#       [bumpv:file:optional_value_fromdoc.txt]
 #       """).strip())
 #
 #     main(['release', '--verbose'])
@@ -1282,8 +1282,8 @@
 #     tmpdir.join("python386.txt").write("1.0a")
 #     tmpdir.chdir()
 #
-#     tmpdir.join(".bumpversion.cfg").write(dedent("""
-#         [bumpversion]
+#     tmpdir.join(".bumpv.cfg").write(dedent("""
+#         [bumpv]
 #         files = python386.txt
 #         current_version = 1.0a
 #
@@ -1304,7 +1304,7 @@
 #           {major}.{minor}{prerel}
 #           {major}.{minor}
 #
-#         [bumpversion:part:prerel]
+#         [bumpv:part:prerel]
 #         optional_value = d
 #         values =
 #           dev
@@ -1345,12 +1345,12 @@
 #     tmpdir.join("the_version.txt").write("0.9.4")
 #     tmpdir.chdir()
 #
-#     tmpdir.join(".bumpversion.cfg").write(dedent("""
-#         [bumpversion]
+#     tmpdir.join(".bumpv.cfg").write(dedent("""
+#         [bumpv]
 #         files = the_version.txt
 #         current_version = 0.9.4
 #
-#         [bumpversion:part:minor]
+#         [bumpv:part:minor]
 #         first_value = 1
 #         """))
 #
@@ -1364,13 +1364,13 @@
 #
 #     tmpdir.chdir()
 #
-#     tmpdir.join(".bumpversion.cfg").write(dedent("""
-#         [bumpversion]
+#     tmpdir.join(".bumpv.cfg").write(dedent("""
+#         [bumpv]
 #         current_version = 1.0.3
 #
-#         [bumpversion:file:FULL_VERSION.txt]
+#         [bumpv:file:FULL_VERSION.txt]
 #
-#         [bumpversion:file:MAJOR_VERSION.txt]
+#         [bumpv:file:MAJOR_VERSION.txt]
 #         serialize = {major}
 #         parse = \d+
 #
@@ -1392,22 +1392,22 @@
 #
 #     tmpdir.chdir()
 #
-#     tmpdir.join(".bumpversion.cfg").write(dedent("""
-#       [bumpversion]
+#     tmpdir.join(".bumpv.cfg").write(dedent("""
+#       [bumpv]
 #       current_version = 1.6.6
 #
 #       [something:else]
 #
 #       [foo]
 #
-#       [bumpversion:file:setup.cfg]
+#       [bumpv:file:setup.cfg]
 #
-#       [bumpversion:file:README.txt]
+#       [bumpv:file:README.txt]
 #       parse = '(?P<major>\d+)\.(?P<minor>\d+)'
 #       serialize =
 #         {major}.{minor}
 #
-#       [bumpversion:file:BUILDNUMBER]
+#       [bumpv:file:BUILDNUMBER]
 #       serialize =
 #         {major}.{minor}.{patch}+{$USER}+{$BUILDNUMBER}
 #
@@ -1439,25 +1439,25 @@
 #
 #     tmpdir.join("requirements.txt").write("Django>=1.5.6,<1.6\nMyProject==1.5.6")
 #
-#     tmpdir.join(".bumpversion.cfg").write(dedent("""
-#       [bumpversion]
+#     tmpdir.join(".bumpv.cfg").write(dedent("""
+#       [bumpv]
 #       current_version = 1.5.6
 #
-#       [bumpversion:file:requirements.txt]
+#       [bumpv:file:requirements.txt]
 #       search = MyProject=={current_version}
 #       replace = MyProject=={new_version}
 #       """).strip())
 #
-#     with mock.patch("bumpversion.logger") as logger:
+#     with mock.patch("bumpv.logger") as logger:
 #         main(['minor', '--verbose'])
 #
 #     # beware of the trailing space (" ") after "serialize =":
 #     EXPECTED_LOG = dedent("""
-#         info|Reading config file .bumpversion.cfg:|
-#         info|[bumpversion]
+#         info|Reading config file .bumpv.cfg:|
+#         info|[bumpv]
 #         current_version = 1.5.6
 #
-#         [bumpversion:file:requirements.txt]
+#         [bumpv:file:requirements.txt]
 #         search = MyProject=={current_version}
 #         replace = MyProject=={new_version}|
 #         info|Parsing version '1.5.6' using regexp '(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)'|
@@ -1476,11 +1476,11 @@
 #          Django>=1.5.6,<1.6
 #         -MyProject==1.5.6
 #         +MyProject==1.6.0|
-#         info|Writing to config file .bumpversion.cfg:|
-#         info|[bumpversion]
+#         info|Writing to config file .bumpv.cfg:|
+#         info|[bumpv]
 #         current_version = 1.6.0
 #
-#         [bumpversion:file:requirements.txt]
+#         [bumpv:file:requirements.txt]
 #         search = MyProject=={current_version}
 #         replace = MyProject=={new_version}
 #
@@ -1517,10 +1517,10 @@
 #     """))
 #
 #     config_content = dedent("""
-#       [bumpversion]
+#       [bumpv]
 #       current_version = 8.1.1
 #
-#       [bumpversion:file:CHANGELOG.md]
+#       [bumpv:file:CHANGELOG.md]
 #       search =
 #         Unreleased
 #         ----------
@@ -1531,9 +1531,9 @@
 #         ---------------------------
 #     """)
 #
-#     tmpdir.join(".bumpversion.cfg").write(config_content)
+#     tmpdir.join(".bumpv.cfg").write(config_content)
 #
-#     with mock.patch("bumpversion.logger") as logger:
+#     with mock.patch("bumpv.logger") as logger:
 #         main(['minor', '--verbose'])
 #
 #     predate = dedent('''
@@ -1575,12 +1575,12 @@
 #     tmpdir.join("fileY").write("3.2.1")
 #     tmpdir.join("fileZ").write("3.2.1")
 #
-#     tmpdir.join(".bumpversion.cfg").write("""[bumpversion]
+#     tmpdir.join(".bumpv.cfg").write("""[bumpv]
 # current_version = 3.2.1
 # files = fileX fileY fileZ
 # """)
 #
-#     bumpversion.__warningregistry__.clear()
+#     bumpv.__warningregistry__.clear()
 #     warnings.resetwarnings()
 #     warnings.simplefilter('always')
 #     with warnings.catch_warnings(record=True) as recwarn:
@@ -1598,7 +1598,7 @@
 #     tmpdir.join("fileB").write("1.2.3")
 #     tmpdir.join("fileC").write("1.2.3")
 #
-#     bumpversion.__warningregistry__.clear()
+#     bumpv.__warningregistry__.clear()
 #     warnings.resetwarnings()
 #     warnings.simplefilter('always')
 #     with warnings.catch_warnings(record=True) as recwarn:
@@ -1616,21 +1616,21 @@
 #     tmpdir.join("todays_icecream").write("14-chocolate")
 #     tmpdir.join("todays_cake").write("14-chocolate")
 #
-#     tmpdir.join(".bumpversion.cfg").write(dedent("""
-#       [bumpversion]
+#     tmpdir.join(".bumpv.cfg").write(dedent("""
+#       [bumpv]
 #       current_version = 14-chocolate
 #       parse = (?P<major>\d+)(\-(?P<flavor>[a-z]+))?
 #       serialize =
 #       	{major}-{flavor}
 #       	{major}
 #
-#       [bumpversion:file:todays_icecream]
+#       [bumpv:file:todays_icecream]
 #       serialize =
 #       	{major}-{flavor}
 #
-#       [bumpversion:file:todays_cake]
+#       [bumpv:file:todays_cake]
 #
-#       [bumpversion:part:flavor]
+#       [bumpv:part:flavor]
 #       values =
 #       	vanilla
 #       	chocolate
@@ -1658,11 +1658,11 @@
 #       C
 #     """))
 #
-#     tmpdir.join(".bumpversion.cfg").write(dedent("""
-#     [bumpversion]
+#     tmpdir.join(".bumpv.cfg").write(dedent("""
+#     [bumpv]
 #     current_version = 9.8.7
 #
-#     [bumpversion:file:the_alphabet.txt]
+#     [bumpv:file:the_alphabet.txt]
 #     search =
 #       A
 #       B
@@ -1697,11 +1697,11 @@
 #
 #     """))
 #
-#     tmpdir.join(".bumpversion.cfg").write(dedent("""
-#     [bumpversion]
+#     tmpdir.join(".bumpv.cfg").write(dedent("""
+#     [bumpv]
 #     current_version = 0.4.1
 #
-#     [bumpversion:file:CHANGES.rst]
+#     [bumpv:file:CHANGES.rst]
 #     search =
 #       current
 #       -------
@@ -1737,8 +1737,8 @@
 #     check_call([vcs, "commit", "-m", "initial commit"])
 #     check_call([vcs, "tag", "very-unrelated-but-containing-lots-of-hyphens"])
 #
-#     tmpdir.join(".bumpversion.cfg").write(dedent("""
-#     [bumpversion]
+#     tmpdir.join(".bumpv.cfg").write(dedent("""
+#     [bumpv]
 #     current_version = 2014.10.22
 #     """))
 #
@@ -1753,11 +1753,11 @@
 #     }
 #     ''')
 #
-#     tmpdir.join(".bumpversion.cfg").write(dedent("""
-#     [bumpversion]
+#     tmpdir.join(".bumpv.cfg").write(dedent("""
+#     [bumpv]
 #     current_version = 1.0.0
 #
-#     [bumpversion:file:bower.json]
+#     [bumpv:file:bower.json]
 #     parse = "version": "(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)"
 #     serialize = "version": "{major}.{minor}.{patch}"
 #     """))
@@ -1768,7 +1768,7 @@
 #
 #     tmpdir.chdir()
 #     tmpdir.join("setup.cfg").write(dedent("""
-#     [bumpversion]
+#     [bumpv]
 #     current_version = 0.1.0
 #
 #     [other]
@@ -1778,7 +1778,7 @@
 #     main(['patch'])
 #
 #     assert dedent("""
-#     [bumpversion]
+#     [bumpv]
 #     current_version = 0.1.1
 #
 #     [other]
@@ -1793,8 +1793,8 @@
 #     tmpdir.join("myp___init__.py").write("__version__ = '0.7.2'")
 #     tmpdir.chdir()
 #
-#     tmpdir.join(".bumpversion.cfg").write(dedent("""
-#         [bumpversion]
+#     tmpdir.join(".bumpv.cfg").write(dedent("""
+#         [bumpv]
 #         current_version = 0.7.2
 #         files = myp___init__.py
 #         message = v{new_version}
@@ -1806,7 +1806,7 @@
 #     main("patch --allow-dirty --verbose --new-version 0.9.3".split(" "))
 #
 #     assert "__version__ = '0.9.3'" == tmpdir.join("myp___init__.py").read()
-#     assert "current_version = 0.9.3" in tmpdir.join(".bumpversion.cfg").read()
+#     assert "current_version = 0.9.3" in tmpdir.join(".bumpv.cfg").read()
 #
 #
 # class TestSplitArgsInOptionalAndPositional:

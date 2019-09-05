@@ -1,5 +1,5 @@
 ===========
-bumpversion
+bumpv
 ===========
 
 Version-bump your software with a single command!
@@ -13,11 +13,11 @@ commits and tags:
   commits and tags to Git and Mercurial if available
 - just handles text files, so it's not specific to any programming language
 
-.. image:: https://travis-ci.org/peritus/bumpversion.png?branch=master
-  :target: https://travis-ci.org/peritus/bumpversion
+.. image:: https://travis-ci.org/peritus/bumpv.png?branch=master
+  :target: https://travis-ci.org/peritus/bumpv
 
 .. image:: https://ci.appveyor.com/api/projects/status/bxq8185bpq9u3sjd/branch/master?svg=true
-  :target: https://ci.appveyor.com/project/peritus/bumpversion
+  :target: https://ci.appveyor.com/project/peritus/bumpv
 
 Screencast
 ==========
@@ -30,7 +30,7 @@ Installation
 
 You can download and install the latest version of this software from the Python package index (PyPI) as follows::
 
-    pip install --upgrade bumpversion
+    pip install --upgrade bumpv
 
 Usage
 =====
@@ -41,7 +41,7 @@ operations.
 
 ::
 
-    bumpversion [options] part [file]
+    bumpv [options] part [file]
 
 
 ``part`` (required)
@@ -51,26 +51,26 @@ operations.
 
   Example `bumping 0.5.1 to 0.6.0`::
 
-     bumpversion --current-version 0.5.1 minor src/VERSION
+     bumpv --current-version 0.5.1 minor src/VERSION
 
 ``[file]``
   **default: none** (optional)
 
   The file that will be modified.
 
-  If not given, the list of ``[bumpversion:file:…]`` sections from the
+  If not given, the list of ``[bumpv:file:…]`` sections from the
   configuration file will be used. If no files are mentioned on the
   configuration file either, are no files will be modified.
 
   Example `bumping 1.1.9 to 2.0.0`::
 
-     bumpversion --current-version 1.1.9 major setup.py
+     bumpv --current-version 1.1.9 major setup.py
 
 Configuration
 +++++++++++++
 
 All options can optionally be specified in a config file called
-``.bumpversion.cfg`` so that once you know how ``bumpversion`` needs to be
+``.bumpv.cfg`` so that once you know how ``bumpv`` needs to be
 configured for one particular software package, you can run it without
 specifying options later. You should add that file to VCS so others can also
 bump versions.
@@ -79,29 +79,29 @@ Options on the command line take precedence over those from the config file,
 which take precedence over those derived from the environment and then from the
 defaults.
 
-Example ``.bumpversion.cfg``::
+Example ``.bumpv.cfg``::
 
-  [bumpversion]
+  [bumpv]
   current_version = 0.2.9
   commit = True
   tag = True
 
-  [bumpversion:file:setup.py]
+  [bumpv:file:setup.py]
 
-If no ``.bumpversion.cfg`` exists, ``bumpversion`` will also look into
+If no ``.bumpv.cfg`` exists, ``bumpv`` will also look into
 ``setup.cfg`` for configuration.
 
 Global configuration
 --------------------
 
-General configuration is grouped in a ``[bumpversion]`` section.
+General configuration is grouped in a ``[bumpv]`` section.
 
 ``current_version =``
   **no default value** (required)
 
   The current version of the software package before bumping.
 
-  Also available as ``--current-version`` (e.g. ``bumpversion --current-version 0.5.1 patch setup.py``)
+  Also available as ``--current-version`` (e.g. ``bumpv --current-version 0.5.1 patch setup.py``)
 
 ``new_version =``
   **no default value** (optional)
@@ -110,7 +110,7 @@ General configuration is grouped in a ``[bumpversion]`` section.
   automatically determined.
 
   Also available as ``--new-version`` (e.g. `to go from 0.5.1 directly to
-  0.6.1`: ``bumpversion --current-version 0.5.1 --new-version 0.6.1 patch
+  0.6.1`: ``bumpv --current-version 0.5.1 --new-version 0.6.1 patch
   setup.py``).
 
 ``tag = (True | False)``
@@ -134,7 +134,7 @@ General configuration is grouped in a ``[bumpversion]`` section.
   the variables ``now`` or ``utcnow`` to get a current timestamp. Both accept
   datetime formatting (when used like as in ``{now:%d.%m.%Y}``).
 
-  Also available as ``--tag-name`` (e.g. ``bumpversion --message 'Jenkins Build
+  Also available as ``--tag-name`` (e.g. ``bumpv --message 'Jenkins Build
   {$BUILD_NUMBER}: {new_version}' patch``).
 
 ``commit = (True | False)``
@@ -156,7 +156,7 @@ General configuration is grouped in a ``[bumpversion]`` section.
   the variables ``now`` or ``utcnow`` to get a current timestamp. Both accept
   datetime formatting (when used like as in ``{now:%d.%m.%Y}``).
 
-  Also available as ``--message`` (e.g.: ``bumpversion --message
+  Also available as ``--message`` (e.g.: ``bumpv --message
   '[{now:%Y-%m-%d}] Jenkins Build {$BUILD_NUMBER}: {new_version}' patch``)
 
 
@@ -177,9 +177,9 @@ For advanced versioning schemes, non-numeric parts may be desirable (e.g. to
 identify `alpha or beta versions
 <http://en.wikipedia.org/wiki/Software_release_life_cycle#Stages_of_development>`_,
 to indicate the stage of development, the flavor of the software package or
-a release name). To do so, you can use a ``[bumpversion:part:…]`` section
+a release name). To do so, you can use a ``[bumpv:part:…]`` section
 containing the part's name (e.g. a part named ``release_name`` is configured in
-a section called ``[bumpversion:part:release_name]``.
+a section called ``[bumpv:part:release_name]``.
 
 The following options are valid inside a part configuration:
 
@@ -191,7 +191,7 @@ The following options are valid inside a part configuration:
 
   Example::
 
-    [bumpversion:part:release_name]
+    [bumpv:part:release_name]
     values =
       witty-warthog
       ridiculous-rat
@@ -205,22 +205,22 @@ The following options are valid inside a part configuration:
 
   Example::
 
-    [bumpversion]
+    [bumpv]
     current_version = 1.alpha
     parse = (?P<num>\d+)\.(?P<release>.*)
     serialize =
       {num}.{release}
       {num}
 
-    [bumpversion:part:release]
+    [bumpv:part:release]
     optional_value = gamma
     values =
       alpha
       beta
       gamma
 
-  Here, ``bumpversion release`` would bump ``1.alpha`` to ``1.beta``. Executing
-  ``bumpversion release`` again would bump ``1.beta`` to ``1``, because
+  Here, ``bumpv release`` would bump ``1.alpha`` to ``1.beta``. Executing
+  ``bumpv release`` again would bump ``1.beta`` to ``1``, because
   `release` being ``gamma`` is configured optional.
 
 ``first_value =``
@@ -231,7 +231,7 @@ The following options are valid inside a part configuration:
 File specific configuration
 ---------------------------
 
-``[bumpversion:file:…]``
+``[bumpv:file:…]``
 
 ``parse =``
   **default:** ``(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)``
@@ -257,7 +257,7 @@ File specific configuration
   specified in ``parse =`` as well as all environment variables (prefixed with
   ``$``).
 
-  Can be specified multiple times, bumpversion will try the serialization
+  Can be specified multiple times, bumpv will try the serialization
   formats beginning with the first and choose the last one where all values can
   be represented like this::
 
@@ -291,13 +291,13 @@ File specific configuration
     Django>=1.5.6,<1.6
     MyProject==1.5.6
 
-  using this ``.bumpversion.cfg`` will ensure only the line containing
+  using this ``.bumpv.cfg`` will ensure only the line containing
   ``MyProject`` will be changed::
 
-    [bumpversion]
+    [bumpv]
     current_version = 1.5.6
 
-    [bumpversion:file:requirements.txt]
+    [bumpv:file:requirements.txt]
     search = MyProject=={current_version}
     replace = MyProject=={new_version}
 
@@ -314,7 +314,7 @@ Additionally, the following options are available:
   Don't touch any files, just pretend. Best used with ``--verbose``.
 
 ``--allow-dirty``
-  Normally, bumpversion will abort if the working directory is dirty to protect
+  Normally, bumpv will abort if the working directory is dirty to protect
   yourself from releasing unversioned files and/or overwriting unsaved changes.
   Use this option to override this check.
 
@@ -333,10 +333,10 @@ Additionally, the following options are available:
 ``-h, --help``
   Print help and exit
 
-Using bumpversion in a script
+Using bumpv in a script
 =============================
 
-If you need to use the version generated by bumpversion in a script you can make use of
+If you need to use the version generated by bumpv in a script you can make use of
 the `--list` option, combined with `grep` and `sed`.
 
 Say for example that you are using git-flow to manage your project and want to automatically
@@ -345,14 +345,14 @@ new version, before applying the change.
 
 The standard way to get it in a bash script is
 
-    bumpversion --dry-run --list <part> | grep <field name> | sed -r s,"^.*=",,
+    bumpv --dry-run --list <part> | grep <field name> | sed -r s,"^.*=",,
 
 where <part> is as usual the part of the version number you are updating. You need to specify
-`--dry-run` to avoid bumpversion actually bumping the version number.
+`--dry-run` to avoid bumpv actually bumping the version number.
 
 For example, if you are updating the minor number and looking for the new version number this becomes
 
-    bumpversion --dry-run --list minor | grep new_version | sed -r s,"^.*=",,
+    bumpv --dry-run --list minor | grep new_version | sed -r s,"^.*=",,
 
 Development
 ===========
@@ -362,7 +362,7 @@ are very welcome, as well as bug reports! Also please open an issue if this
 tool does not support every aspect of bumping versions in your development
 workflow, as it is intended to be very versatile.
 
-How to release bumpversion itself
+How to release bumpv itself
 +++++++++++++++++++++++++++++++++
 
 Execute the following commands::
@@ -370,15 +370,15 @@ Execute the following commands::
     git checkout master
     git pull
     tox
-    bumpversion release
+    bumpv release
     python setup.py sdist bdist_wheel upload
-    bumpversion --no-tag patch
+    bumpv --no-tag patch
     git push origin master --tags
 
 License
 =======
 
-bumpversion is licensed under the MIT License - see the LICENSE.rst file for details
+bumpv is licensed under the MIT License - see the LICENSE.rst file for details
 
 Changes
 =======
@@ -389,9 +389,9 @@ Changes
 **v0.5.3**
 
 - Fix bug where ``--new-version`` value was not used when config was present
-  (thanks @cscetbon @ecordell (`#60 <https://github.com/peritus/bumpversion/pull/60>`_)
+  (thanks @cscetbon @ecordell (`#60 <https://github.com/peritus/bumpv/pull/60>`_)
 - Preserve case of keys config file
-  (thanks theskumar `#75 <https://github.com/peritus/bumpversion/pull/75>`_)
+  (thanks theskumar `#75 <https://github.com/peritus/bumpv/pull/75>`_)
 - Windows CRLF improvements (thanks @thebjorn)
 
 **v0.5.1**
@@ -399,15 +399,15 @@ Changes
 - Document file specific options ``search =`` and ``replace =`` (introduced in 0.5.0)
 - Fix parsing individual labels from ``serialize =`` config even if there are
   characters after the last label (thanks @mskrajnowski `#56
-  <https://github.com/peritus/bumpversion/pull/56>`_).
+  <https://github.com/peritus/bumpv/pull/56>`_).
 - Fix: Don't crash in git repositories that have tags that contain hyphens
-  (`#51 <https://github.com/peritus/bumpversion/pull/51>`_) (`#52
-  <https://github.com/peritus/bumpversion/pull/52>`_).
+  (`#51 <https://github.com/peritus/bumpv/pull/51>`_) (`#52
+  <https://github.com/peritus/bumpv/pull/52>`_).
 - Fix: Log actual content of the config file, not what ConfigParser prints
   after reading it.
 - Fix: Support multiline values in ``search =``
 - also load configuration from ``setup.cfg`` (thanks @t-8ch `#57
-  <https://github.com/peritus/bumpversion/pull/57>`_).
+  <https://github.com/peritus/bumpv/pull/57>`_).
 
 **v0.5.0**
 
@@ -421,36 +421,36 @@ in the configuration format. This release is fully backwards compatible to
   regular expressions. See `re.VERBOSE in the Python documentation
   <https://docs.python.org/library/re.html#re.VERBOSE>`_ for details, `this
   testcase
-  <https://github.com/peritus/bumpversion/blob/165e5d8bd308e9b7a1a6d17dba8aec9603f2d063/tests.py#L1202-L1211>`_
+  <https://github.com/peritus/bumpv/blob/165e5d8bd308e9b7a1a6d17dba8aec9603f2d063/tests.py#L1202-L1211>`_
   as an example.)
-- New feature: ``--allow-dirty`` (`#42 <https://github.com/peritus/bumpversion/pull/42>`_).
-- Fix: Save the files in binary mode to avoid mutating newlines (thanks @jaraco `#45 <https://github.com/peritus/bumpversion/pull/45>`_). 
-- License: bumpversion is now licensed under the MIT License (`#47 <https://github.com/peritus/bumpversion/issues/47>`_)
+- New feature: ``--allow-dirty`` (`#42 <https://github.com/peritus/bumpv/pull/42>`_).
+- Fix: Save the files in binary mode to avoid mutating newlines (thanks @jaraco `#45 <https://github.com/peritus/bumpv/pull/45>`_).
+- License: bumpv is now licensed under the MIT License (`#47 <https://github.com/peritus/bumpv/issues/47>`_)
 
-- Deprecate multiple files on the command line (use a `configuration file <#configuration>`_ instead, or invoke ``bumpversion`` multiple times)
+- Deprecate multiple files on the command line (use a `configuration file <#configuration>`_ instead, or invoke ``bumpv`` multiple times)
 - Deprecate 'files =' configuration (use `file specific configuration <#file-specific-configuration>`_ instead)
 
 **v0.4.1**
 
-- Add --list option (`#39 <https://github.com/peritus/bumpversion/issues/39>`_)
-- Use temporary files for handing over commit/tag messages to git/hg (`#36 <https://github.com/peritus/bumpversion/issues/36>`_)
-- Fix: don't encode stdout as utf-8 on py3 (`#40 <https://github.com/peritus/bumpversion/issues/40>`_)
+- Add --list option (`#39 <https://github.com/peritus/bumpv/issues/39>`_)
+- Use temporary files for handing over commit/tag messages to git/hg (`#36 <https://github.com/peritus/bumpv/issues/36>`_)
+- Fix: don't encode stdout as utf-8 on py3 (`#40 <https://github.com/peritus/bumpv/issues/40>`_)
 - Fix: logging of content of config file was wrong
 
 **v0.4.0**
 
-- Add --verbose option (`#21 <https://github.com/peritus/bumpversion/issues/21>`_ `#30 <https://github.com/peritus/bumpversion/issues/30>`_)
+- Add --verbose option (`#21 <https://github.com/peritus/bumpv/issues/21>`_ `#30 <https://github.com/peritus/bumpv/issues/30>`_)
 - Allow option --serialize multiple times
 
 **v0.3.8**
 
-- Fix: --parse/--serialize didn't work from cfg (`#34 <https://github.com/peritus/bumpversion/issues/34>`_)
+- Fix: --parse/--serialize didn't work from cfg (`#34 <https://github.com/peritus/bumpv/issues/34>`_)
 
 **v0.3.7**
 
 - Don't fail if git or hg is not installed (thanks @keimlink)
-- "files" option is now optional (`#16 <https://github.com/peritus/bumpversion/issues/16>`_)
-- Fix bug related to dirty work dir (`#28 <https://github.com/peritus/bumpversion/issues/28>`_)
+- "files" option is now optional (`#16 <https://github.com/peritus/bumpv/issues/16>`_)
+- Fix bug related to dirty work dir (`#28 <https://github.com/peritus/bumpv/issues/28>`_)
 
 
 **v0.3.6**
@@ -471,7 +471,7 @@ in the configuration format. This release is fully backwards compatible to
 
 **v0.3.4**
 
-- bugfix: tag_name and message in .bumpversion.cfg didn't have an effect (`#9 <https://github.com/peritus/bumpversion/issues/9>`_)
+- bugfix: tag_name and message in .bumpv.cfg didn't have an effect (`#9 <https://github.com/peritus/bumpv/issues/9>`_)
 
 **v0.3.3**
 
@@ -486,17 +486,17 @@ in the configuration format. This release is fully backwards compatible to
 
 - bugfix: ``--help`` in git workdir raising AssertionError
 - bugfix: fail earlier if one of files does not exist
-- bugfix: ``commit = True`` / ``tag = True`` in .bumpversion.cfg had no effect
+- bugfix: ``commit = True`` / ``tag = True`` in .bumpv.cfg had no effect
 
 **v0.3.0**
 
 - **BREAKING CHANGE** The ``--bump`` argument was removed, this is now the first
   positional argument.
-  If you used ``bumpversion --bump major`` before, you can use
-  ``bumpversion major`` now.
-  If you used ``bumpversion`` without arguments before, you now
+  If you used ``bumpv --bump major`` before, you can use
+  ``bumpv major`` now.
+  If you used ``bumpv`` without arguments before, you now
   need to specify the part (previous default was ``patch``) as in
-  ``bumpversion patch``).
+  ``bumpv patch``).
 
 **v0.2.2**
 

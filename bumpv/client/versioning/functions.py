@@ -1,8 +1,11 @@
 import re
 
 
-class NumericFunction(object):
+def kv_string(d):
+    return ", ".join("{}={}".format(k, v) for k, v in sorted(d.items()))
 
+
+class NumericFunction(object):
     """
     This is a class that provides a numeric function for version parts.
     It simply starts with the provided first_value (0 by default) and
@@ -15,7 +18,7 @@ class NumericFunction(object):
     considered (e.g. 'r3-001' --> 'r4-001').
     """
 
-    FIRST_NUMERIC = re.compile('([^\d]*)(\d+)(.*)')
+    FIRST_NUMERIC = re.compile(r"([^\d]*)(\d+)(.*)")
 
     def __init__(self, first_value=None):
 
@@ -41,7 +44,6 @@ class NumericFunction(object):
 
 
 class ValuesFunction(object):
-
     """
     This is a class that provides a values list based function for version parts.
     It is initialized with a list of values and iterates through them when
@@ -81,7 +83,7 @@ class ValuesFunction(object):
 
     def bump(self, value):
         try:
-            return self._values[self._values.index(value)+1]
+            return self._values[self._values.index(value) + 1]
         except IndexError:
             raise ValueError(
                 "The part has already the maximum value among {} and cannot be bumped.".format(self._values))

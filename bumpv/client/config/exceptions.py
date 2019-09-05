@@ -1,0 +1,2 @@
+class InvalidConfigPath(Exception):
+    pass

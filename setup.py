@@ -10,18 +10,18 @@ long_description = re.sub(
 )
 
 setup(
-    name='bumpversion',
+    name='bumpv',
     version='0.5.4-dev',
-    url='https://github.com/kylie-a/bumpversion',
+    url='https://github.com/kylie-a/bumpv',
     author='Kylie Auld',
     author_email='kylie.a@protonmail.com',
     license='MIT',
-    packages=['bumpversion'],
+    packages=['bumpv'],
     description=description,
     long_description=long_description,
     entry_points={
         'console_scripts': [
-            'bumpversion = bumpversion:main',
+            'bumpv = bumpv:bumpv',
         ]
     },
     classifiers=(

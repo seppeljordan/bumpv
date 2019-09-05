@@ -30,12 +30,12 @@ install:
   - "%PYTHON%/Scripts/pip.exe install mercurial"
   - "%PYTHON%/Scripts/pip.exe install -e ."
 
-  - 'git config --global user.email "bumpversion-test-git@appveyor.ci"'
+  - 'git config --global user.email "bumpv-test-git@appveyor.ci"'
   - 'git config --global user.name "Testing Git on AppVeyor CI"'
   - 'git --version'
   - 'git config --list'
 
-  - ps: Add-Content $ENV:UserProfile\Mercurial.ini "[ui]`r`nusername = Testing Mercurial on AppVeyor CI <bumpversion-test-hg@appveyor.ci>"
+  - ps: Add-Content $ENV:UserProfile\Mercurial.ini "[ui]`r`nusername = Testing Mercurial on AppVeyor CI <bumpv-test-hg@appveyor.ci>"
   - ps: Write-Host $ENV:UserProfile\Mercurial.ini
   - ps: Get-Content $ENV:UserProfile\Mercurial.ini
   - 'hg --version'
