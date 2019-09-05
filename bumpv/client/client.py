@@ -126,16 +126,19 @@ class BumpClient:
         updater.replace(dry_run)
 
         if self.config.tag:
-            print(f"TAG: {self.new_version.get_tag()}")
-            # self.vcs.tag(new_version.get_tag())
+            # print(f"TAG: {self.new_version.get_tag()}")
+            self.vcs.tag(self.new_version.get_tag())
 
         if self.config.commit:
+            for path in self.config.files():
+                self.vcs.add_path(path)
             message = self.config.message.format(
                 current_version=self.current_version.serialize(),
                 new_version=self.new_version.serialize(),
             )
-            print(f"COMMITTING: {message}")
-            # self.vcs.commit(self.config.message)
+            # print(f"COMMITTING: {message}")
+            import ipdb; ipdb.set_trace()
+            self.vcs.commit(message)
         return self.new_version
 
     def dict(self):

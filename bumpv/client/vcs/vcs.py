@@ -19,14 +19,13 @@ class BaseVCS(object):
 
     @classmethod
     def commit(cls, message):
-        with NamedTemporaryFile('wb', delete=False) as f:
-            f.write(message.encode('utf-8'))
-
-        subprocess.check_output(
-            cls._COMMIT_COMMAND + [f.name],
-            env=dict(list(os.environ.items()) + [(b'HGENCODING', b'utf-8')])
-        )
-        os.unlink(f.name)
+        try:
+            subprocess.check_output(
+                cls._COMMIT_COMMAND + [message]
+            )
+        except Exception as err:
+            import ipdb; ipdb.set_trace()
+            print("out")
 
     @classmethod
     def is_usable(cls):
@@ -61,7 +60,7 @@ class BaseVCS(object):
 
 class Git(BaseVCS):
     _TEST_USABLE_COMMAND = ["git", "rev-parse", "--git-dir"]
-    _COMMIT_COMMAND = ["git", "commit", "-F"]
+    _COMMIT_COMMAND = ["git", "commit", "-m"]
 
     @classmethod
     def assert_nondirty(cls):
