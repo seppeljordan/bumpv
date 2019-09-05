@@ -2,23 +2,15 @@ import os
 import subprocess
 from tempfile import NamedTemporaryFile
 
-from .exceptions import WorkingDirectoryIsDirtyException
-from .utils import get_logger
+from ..logging import get_logger
 
 
 logger = get_logger(False)
 
 
-def get_vcs(allow_dirty=False):
-    for vcs in VCS:
-        if vcs.is_usable():
-            try:
-                vcs.assert_nondirty()
-            except WorkingDirectoryIsDirtyException as e:
-                if not allow_dirty:
-                    logger.warn(f"{e.message}\n\nUse --allow-dirty to override this if you know what you're doing.")
-                    raise
-            return vcs
+class WorkingDirectoryIsDirtyException(Exception):
+    def __init__(self, message):
+        self.message = message
 
 
 class BaseVCS(object):
@@ -50,6 +42,22 @@ class BaseVCS(object):
                 return False
             raise
 
+    @classmethod
+    def assert_nondirty(cls):
+        pass
+
+    @classmethod
+    def latest_tag_info(cls):
+        pass
+
+    @classmethod
+    def add_path(cls, path):
+        pass
+
+    @classmethod
+    def tag(cls, name):
+        pass
+
 
 class Git(BaseVCS):
     _TEST_USABLE_COMMAND = ["git", "rev-parse", "--git-dir"]
@@ -58,16 +66,13 @@ class Git(BaseVCS):
     @classmethod
     def assert_nondirty(cls):
         lines = [
-            line.strip() for line in
-            subprocess.check_output(
-                ["git", "status", "--porcelain"]).splitlines()
+            line.strip().decode() for line in
+            subprocess.check_output(["git", "status", "--porcelain"]).splitlines()
             if not line.strip().startswith(b"??")
         ]
 
         if lines:
-            raise WorkingDirectoryIsDirtyException(
-                "Git working directory is not clean:\n{}".format(
-                    b"\n".join(lines)))
+            raise WorkingDirectoryIsDirtyException("Git working directory is not clean:\n{}".format("\n".join(lines)))
 
     @classmethod
     def latest_tag_info(cls):
@@ -116,10 +121,6 @@ class Mercurial(BaseVCS):
     _COMMIT_COMMAND = ["hg", "commit", "--logfile"]
 
     @classmethod
-    def latest_tag_info(cls):
-        return {}
-
-    @classmethod
     def assert_nondirty(cls):
         lines = [
             line.strip() for line in
@@ -134,6 +135,10 @@ class Mercurial(BaseVCS):
                     b"\n".join(lines)))
 
     @classmethod
+    def latest_tag_info(cls):
+        return {}
+
+    @classmethod
     def add_path(cls, path):
         pass
 
@@ -143,3 +148,15 @@ class Mercurial(BaseVCS):
 
 
 VCS = [Git, Mercurial]
+
+
+def get_vcs(allow_dirty: bool = False) -> [Git, Mercurial]:
+    for vcs in VCS:
+        if vcs.is_usable():
+            try:
+                vcs.assert_nondirty()
+            except WorkingDirectoryIsDirtyException as e:
+                if not allow_dirty:
+                    logger.warn(f"{e.message}\n\nUse --allow-dirty to override this if you know what you're doing.")
+                    raise
+            return vcs

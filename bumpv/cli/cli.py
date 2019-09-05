@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
 
 """Console script for deploy_py."""
-import argparse
-import json
 import sys
 
 import click
-import yaml
 
 from ..client import BumpClient
 from ..client.config import Configuration
-
+from ..client.vcs import (
+    WorkingDirectoryIsDirtyException,
+)
 
 DEFAULTS = {
     "verbose": "0",
@@ -29,11 +28,20 @@ def bumpv(args=None):
 @click.option("-v", '--verbose', count=True, default=0, required=False)
 @click.option("-l", '--list', "show_list", is_flag=True)
 @click.option("-d", '--allow-dirty', is_flag=True)
-@click.option("-o", '--output', is_flag=True)
-def bump(part, verbose, show_list, allow_dirty, output):
+@click.option("-o", '--output', default="yaml")
+@click.option('--dry-run', is_flag=True)
+def bump(part, verbose, show_list, allow_dirty, output, dry_run):
     config = Configuration()
-    client = BumpClient(config, verbose=verbose, show_list=show_list, allow_dirty=allow_dirty)
-    client.bump(part)
+    try:
+        client = BumpClient(config, verbose=verbose, show_list=show_list, allow_dirty=allow_dirty)
+    except WorkingDirectoryIsDirtyException:
+        sys.exit(1)
+
+    client.bump(part, dry_run)
+
+    output_func = getattr(client, output)
+
+    print(output_func())
 
 
 if __name__ == "__main__":
