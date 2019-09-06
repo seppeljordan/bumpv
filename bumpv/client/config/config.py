@@ -5,7 +5,7 @@ from .exceptions import InvalidConfigPath, OptionNotFound
 from ..logging import get_logger
 
 
-logger = get_logger(False)
+logger = get_logger()
 
 FILE_SECTION_PREFIX = "bumpv:file:"
 PART_SECTION_PREFIX = "bumpv:part:"

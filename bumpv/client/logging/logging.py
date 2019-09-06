@@ -9,7 +9,7 @@ _logger = None
 _logger_list = None
 
 
-def get_logger(show_list, verbose=False):
+def get_logger(level: int = 0):
     global _logger
     logger_list = get_logger_list()
     if _logger is None:
@@ -26,14 +26,11 @@ def get_logger(show_list, verbose=False):
         ch2.setFormatter(log_formatter)
         logger_list.addHandler(ch2)
 
-    if show_list:
-        logger_list.setLevel(1)
-
     log_level = {
         0: logging.WARNING,
         1: logging.INFO,
         2: logging.DEBUG,
-    }.get(verbose, logging.DEBUG)
+    }.get(level, logging.DEBUG)
 
     _logger.setLevel(log_level)
     return _logger

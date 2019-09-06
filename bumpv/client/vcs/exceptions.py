@@ -5,5 +5,5 @@ class WorkingDirectoryIsDirtyException(Exception):
 
 class VCSCommandError(Exception):
     def __init__(self, message, command):
-        self.message = f"error attempting VCS command '{' '.join(command)}' {message}"
+        self.message = message
         self.command = command

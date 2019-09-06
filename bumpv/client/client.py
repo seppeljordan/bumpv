@@ -2,6 +2,7 @@ import json
 
 import yaml
 
+from . import exceptions
 from .config import Configuration
 from .files import FileUpdater
 from .logging import (
@@ -12,16 +13,12 @@ from .vcs import get_vcs
 from .versioning import Version
 
 
-logger = get_logger(False)
-logger_list = get_logger_list()
-
-
 class BumpClient:
-    def __init__(self, config: Configuration = None, verbose=0, show_list=False, allow_dirty=False):
+    def __init__(self, config: Configuration = None, verbosity=0, allow_dirty=False):
         if config is None:
             config = Configuration()
 
-        self.logger = get_logger(show_list, verbose)
+        self.logger = get_logger(verbosity)
         self.logger_list = get_logger_list()
         self.config = config
         self.vcs = get_vcs(allow_dirty)
@@ -34,8 +31,9 @@ class BumpClient:
         updater.replace(dry_run)
 
         self.config.set_value("bumpv", "current_version", self.new_version.serialize())
-        self.config.write()
-        self.vcs.add_path(self.config.file_path)
+        if not dry_run:
+            self.config.write()
+            self.vcs.add_path(self.config.file_path)
 
         if self.config.commit:
             for path in self.config.files():

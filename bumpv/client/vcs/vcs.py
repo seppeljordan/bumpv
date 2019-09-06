@@ -6,7 +6,7 @@ from .exceptions import WorkingDirectoryIsDirtyException, VCSCommandError
 from ..logging import get_logger
 
 
-logger = get_logger(False)
+logger = get_logger()
 
 
 class BaseVCS(object):

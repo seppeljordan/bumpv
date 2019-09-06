@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from ..versioning import Version
 
 
-logger = get_logger(False)
+logger = get_logger()
 
 
 class FileUpdater:
@@ -42,23 +42,26 @@ class FileUpdater:
 
     def _contains(self, path):
         serialized_version = self.search.format(**self.context)
-        with io.open(path, 'rb') as f:
-            search_lines = serialized_version.splitlines()
-            lookbehind = []
+        try:
+            with io.open(path, 'rb') as f:
+                search_lines = serialized_version.splitlines()
+                lookbehind = []
 
-            for lineno, line in enumerate(f.readlines()):
-                lookbehind.append(line.decode('utf-8').rstrip("\n"))
+                for lineno, line in enumerate(f.readlines()):
+                    lookbehind.append(line.decode('utf-8').rstrip("\n"))
 
-                if len(lookbehind) > len(search_lines):
-                    lookbehind = lookbehind[1:]
+                    if len(lookbehind) > len(search_lines):
+                        lookbehind = lookbehind[1:]
 
-                if (search_lines[0] in lookbehind[0] and
-                   search_lines[-1] in lookbehind[-1] and
-                   search_lines[1:-1] == lookbehind[1:-1]):
-                    logger.info("Found '{}' in {} at line {}: {}".format(
-                        serialized_version, path, lineno - (len(lookbehind) - 1), line.decode('utf-8').rstrip()))
-                    return True
-        return False
+                    if (search_lines[0] in lookbehind[0] and
+                       search_lines[-1] in lookbehind[-1] and
+                       search_lines[1:-1] == lookbehind[1:-1]):
+                        logger.info("Found '{}' in {} at line {}: {}".format(
+                            serialized_version, path, lineno - (len(lookbehind) - 1), line.decode('utf-8').rstrip()))
+                        return True
+            return False
+        except FileNotFoundError:
+            raise InvalidTargetFile(f"file listed in config not found: '{path}'")
 
     def _replace(self, path, dry_run=False):
         with io.open(path, 'rb') as f:
