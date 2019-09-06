@@ -33,6 +33,9 @@ class BumpClient:
         updater = FileUpdater(self.config, self.current_version, self.new_version)
         updater.replace(dry_run)
 
+        self.config.set_value("bumpv", "current_version", self.new_version.serialize())
+        self.config.write()
+
         if self.config.commit:
             for path in self.config.files():
                 self.vcs.add_path(path)
@@ -45,9 +48,6 @@ class BumpClient:
         if self.config.tag:
             self.logger.debug(f"GIT TAG: {self.new_version.get_tag()}")
             self.vcs.tag(self.new_version.get_tag())
-
-        self.config.set_value("bumpv", "current_version", self.new_version.serialize())
-        self.config.write()
 
         return self.new_version
 
