@@ -1,6 +1,6 @@
-===========
-bumpv
-===========
+# bumpv
+
+A more modern and streamlined fork of [bumpversion](https://github.com/peritus/bumpversion)
 
 Version-bump your software with a single command!
 
@@ -18,12 +18,6 @@ commits and tags:
 
 .. image:: https://ci.appveyor.com/api/projects/status/bxq8185bpq9u3sjd/branch/master?svg=true
   :target: https://ci.appveyor.com/project/peritus/bumpv
-
-Screencast
-==========
-
-.. image:: https://dl.dropboxusercontent.com/u/8735936/Screen%20Shot%202013-04-12%20at%202.43.46%20PM.png
-  :target: https://asciinema.org/a/3828
 
 Installation
 ============
