@@ -1,6 +1,7 @@
 import sys
 
 from .cli import bumpv
+from .client import BumpClient
 
 __VERSION__ = '0.6.3'
 

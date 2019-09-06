@@ -14,9 +14,7 @@ creates commits and tags:
   - just handles text files, so it's not specific to any programming
     language
 
-[![image](https://travis-ci.org/peritus/bumpv.png?branch=master)](https://travis-ci.org/peritus/bumpv)
-
-[![image](https://ci.appveyor.com/api/projects/status/bxq8185bpq9u3sjd/branch/master?svg=true)](https://ci.appveyor.com/project/peritus/bumpv)
+[![image](https://travis-ci.org/kylie-a/bumpv.png?branch=master)](https://travis-ci.org/peritus/bumpv)
 
 # Installation
 
@@ -27,35 +25,13 @@ the Python package index (PyPI) as follows:
 
 # Usage
 
-There are two modes of operation: On the command line for single-file
-operation and using a [configuration file](#configuration) for more
-complex multi-file operations.
+`bumpv` can be used as a CLI tool or as installed library as part of a larger CI/CD system.
 
-    bumpv [options] part [file]
+## CLI
 
-  - `part` (required)  
-    The part of the version to increase, e.g. `minor`.
-    
-    Valid values include those given in the `--serialize` / `--parse`
-    option.
-    
-    Example \`bumping 0.5.1 to 0.6.3\`:
-    
-        bumpv --current-version 0.5.1 minor src/VERSION
-
-  - `[file]`  
-    **default: none** (optional)
-    
-    The file that will be modified.
-
-
-  - If not given, the list of `[bumpv:file:…]` sections from the  
-    configuration file will be used. If no files are mentioned on the
-    configuration file either, are no files will be modified.
-    
-    Example \`bumping 1.1.9 to 2.0.0\`:
-    
-        bumpv --current-version 1.1.9 major setup.py
+```bash
+bumpv bump [major|minor|patch] [-d | --allow-dirty] 
+```
 
 # Configuration
 
@@ -313,18 +289,18 @@ The following options are valid inside a part configuration:
 Most of the configuration values above can also be given as an option.
 Additionally, the following options are available:
 
-  - `--dry-run, -n`  
+  - `--dry-run, -n`
     Don't touch any files, just pretend. Best used with `--verbose`.
 
-  - `--allow-dirty`  
+  - `--allow-dirty`
     Normally, bumpv will abort if the working directory is dirty to
     protect yourself from releasing unversioned files and/or overwriting
     unsaved changes. Use this option to override this check.
 
-  - `--verbose`  
+  - `--verbose`
     Print useful information to stderr
 
-  - `--list`  
+  - `--list`
     List machine readable information to stdout for consumption by other
     programs.
     
