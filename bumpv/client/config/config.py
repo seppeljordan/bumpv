@@ -1,9 +1,8 @@
 import os
-from configparser import ConfigParser, NoOptionError
+from configparser import ConfigParser
 
 from .exceptions import InvalidConfigPath, OptionNotFound
 from ..logging import get_logger
-from ..versioning import Version
 
 
 logger = get_logger(False)
@@ -37,9 +36,9 @@ class Configuration:
             raise InvalidConfigPath(f"no file found at: {file_path}")
 
         self._config = config
+        self.file_path = file_path
 
         bumpv_section = self.get_section("bumpv")
-
         self.current_version = bumpv_section.get("current_version")
         self.commit = bumpv_section.getboolean("commit")
         self.tag = bumpv_section.getboolean("tag")
@@ -60,12 +59,14 @@ class Configuration:
             raise OptionNotFound(f"option '{option}'' not found in section '{key}'")
 
     def get_section_names(self, key):
+        names = []
         for section in self._config.sections():
             if section == "bumpv":
                 continue
             _, section, name = section.split(":")
             if section == key:
-                yield name
+                names.append(name)
+        return names
 
     def files(self):
         return self.get_section_names("file")
@@ -78,3 +79,13 @@ class Configuration:
 
     def get_part_section(self, part):
         return self.get_section(f"{FILE_SECTION_PREFIX}{part}")
+
+    def set_value(self, key, option, value):
+        self._config[key][option] = value
+
+    def write(self, out=None):
+        if out is None:
+            out = self.file_path
+
+        with open(out, "w") as conf_file:
+            self._config.write(conf_file)

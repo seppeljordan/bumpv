@@ -2,15 +2,11 @@ import os
 import subprocess
 from tempfile import NamedTemporaryFile
 
+from .exceptions import WorkingDirectoryIsDirtyException, VCSCommandError
 from ..logging import get_logger
 
 
 logger = get_logger(False)
-
-
-class WorkingDirectoryIsDirtyException(Exception):
-    def __init__(self, message):
-        self.message = message
 
 
 class BaseVCS(object):
@@ -19,13 +15,16 @@ class BaseVCS(object):
 
     @classmethod
     def commit(cls, message):
+        with NamedTemporaryFile('wb', delete=False) as commit_file:
+            commit_file.write(message.encode('utf-8'))
+
+        command = cls._COMMIT_COMMAND + [commit_file.name]
         try:
-            subprocess.check_output(
-                cls._COMMIT_COMMAND + [message]
-            )
-        except Exception as err:
-            import ipdb; ipdb.set_trace()
-            print("out")
+            subprocess.check_output(command)
+        except subprocess.CalledProcessError as err:
+            raise VCSCommandError(err.output, command)
+        finally:
+            os.unlink(commit_file.name)
 
     @classmethod
     def is_usable(cls):
@@ -60,7 +59,7 @@ class BaseVCS(object):
 
 class Git(BaseVCS):
     _TEST_USABLE_COMMAND = ["git", "rev-parse", "--git-dir"]
-    _COMMIT_COMMAND = ["git", "commit", "-m"]
+    _COMMIT_COMMAND = ["git", "commit", "-F"]
 
     @classmethod
     def assert_nondirty(cls):
@@ -90,8 +89,8 @@ class Git(BaseVCS):
                 "--match=v*",
             ], stderr=subprocess.STDOUT
             ).decode().split("-")
-        except subprocess.CalledProcessError:
-            # logger.warn("Error when running git describe")
+        except subprocess.CalledProcessError as err:
+            logger.warn(f"Error when running git describe: {err.output}")
             return {}
 
         info = {}
@@ -107,8 +106,10 @@ class Git(BaseVCS):
         return info
 
     @classmethod
-    def add_path(cls, path):
-        subprocess.check_output(["git", "add", "--update", path])
+    def add_path(cls, *paths):
+        command = ["git", "add", "--update"]
+        command.extend(paths)
+        subprocess.check_output(command)
 
     @classmethod
     def tag(cls, name):

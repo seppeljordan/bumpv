@@ -6,16 +6,7 @@ import sys
 import click
 
 from ..client import BumpClient
-from ..client.config import Configuration
-from ..client.vcs import (
-    WorkingDirectoryIsDirtyException,
-)
-
-DEFAULTS = {
-    "verbose": "0",
-    "list": "False",
-    "allow_dirty": "False",
-}
+from ..client.vcs import WorkingDirectoryIsDirtyException
 
 
 @click.group()
@@ -31,9 +22,8 @@ def bumpv(args=None):
 @click.option("-o", '--output', default="yaml")
 @click.option('--dry-run', is_flag=True)
 def bump(part, verbose, show_list, allow_dirty, output, dry_run):
-    config = Configuration()
     try:
-        client = BumpClient(config, verbose=verbose, show_list=show_list, allow_dirty=allow_dirty)
+        client = BumpClient(verbose=verbose, show_list=show_list, allow_dirty=allow_dirty)
     except WorkingDirectoryIsDirtyException:
         sys.exit(1)
 
