@@ -49,7 +49,7 @@ operations.
 
   Valid values include those given in the ``--serialize`` / ``--parse`` option.
 
-  Example `bumping 0.5.1 to 0.6.2`::
+  Example `bumping 0.5.1 to 0.6.3`::
 
      bumpv --current-version 0.5.1 minor src/VERSION
 
@@ -110,7 +110,7 @@ General configuration is grouped in a ``[bumpv]`` section.
   automatically determined.
 
   Also available as ``--new-version`` (e.g. `to go from 0.5.1 directly to
-  0.6.2`: ``bumpv --current-version 0.5.1 --new-version 0.6.2 patch
+  0.6.3`: ``bumpv --current-version 0.5.1 --new-version 0.6.3 patch
   setup.py``).
 
 ``tag = (True | False)``
@@ -384,7 +384,7 @@ Changes
 =======
 
 **unreleased**
-**v0.6.2**
+**v0.6.3**
 
 **v0.5.3**
 
