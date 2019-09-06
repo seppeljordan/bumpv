@@ -35,6 +35,7 @@ class BumpClient:
 
         self.config.set_value("bumpv", "current_version", self.new_version.serialize())
         self.config.write()
+        self.vcs.add_path(self.config.file_path)
 
         if self.config.commit:
             for path in self.config.files():
