@@ -49,7 +49,7 @@ operations.
 
   Valid values include those given in the ``--serialize`` / ``--parse`` option.
 
-  Example `bumping 0.5.1 to 0.6.0`::
+  Example `bumping 0.5.1 to 0.6.1`::
 
      bumpv --current-version 0.5.1 minor src/VERSION
 
@@ -384,7 +384,7 @@ Changes
 =======
 
 **unreleased**
-**v0.6.0**
+**v0.6.1**
 
 **v0.5.3**
 
