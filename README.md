@@ -76,7 +76,7 @@ General configuration is grouped in a `[bumpv]` section.
     given will be automatically determined.
     
     Also available as `--new-version` (e.g. \`to go from 0.5.1 directly
-    to 0.6.4\`: `bumpv --current-version 0.5.1 --new-version 0.6.4 patch
+    to 0.6.5\`: `bumpv --current-version 0.5.1 --new-version 0.6.5 patch
     setup.py`).
 
   - `tag = (True | False)`  
