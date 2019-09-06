@@ -26,6 +26,14 @@ DEFAULT = {
 }
 
 
+def new_config_file(name=".bumpv.cfg", initial_version="0.1.0"):
+    DEFAULT["bumpv"]["current_version"] = initial_version
+    config = ConfigParser()
+    config.read_dict(DEFAULT)
+    with open(name, "w") as conf_file:
+        config.write(conf_file)
+
+
 class Configuration:
     def __init__(self, file_path=".bumpv.cfg", *args, **kwargs):
         config = ConfigParser()
@@ -48,6 +56,14 @@ class Configuration:
         self.search = bumpv_section.get("search")
         self.replace = bumpv_section.get("replace")
         self.message = bumpv_section.get("message")
+
+    def __repr__(self):
+        return f"<bumpv.Configuration: {self.file_path}>"
+
+    @classmethod
+    def new(cls, name=".bumpv.cfg", initial_version="0.1.0"):
+        new_config_file(name, initial_version)
+        return Configuration(file_path=name)
 
     def get_section(self, key):
         return self._config[key]

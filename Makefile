@@ -5,8 +5,4 @@ build:
 	~/.virtualenvs/bumpversion/bin/bumpv bump $(part)
 	@~/.virtualenvs/bumpversion/bin/python setup.py sdist
 	twine upload dist/*
-
-build/test:
-	~/.virtualenvs/bumpversion/bin/python setup.py sdist
-	twine upload --repository-url https://test.pypi.org/legacy/ dist/* --verbose
-
+	rm -rf ./dist

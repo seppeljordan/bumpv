@@ -5,7 +5,7 @@ import sys
 
 import click
 
-from ..client import BumpClient
+from ..client import BumpClient, Configuration
 from ..client import exceptions
 
 
@@ -40,6 +40,25 @@ def bump(part, verbose, allow_dirty, output, dry_run):
     output_func = getattr(client, output)
 
     print(output_func())
+
+
+@bumpv.command()
+def current():
+    try:
+        config = Configuration()
+    except exceptions.InvalidConfigPath as err:
+        click.echo(f"error loading config: {err}")
+        sys.exit(1)
+
+    click.echo(config.current_version)
+
+
+@bumpv.command()
+@click.argument("path", default=".bumpv.cfg", required=False)
+@click.argument("initial_version", default="0.1.0", required=False)
+def init(path, initial_version):
+    config = Configuration.new(path, initial_version)
+    click.echo(config)
 
 
 if __name__ == "__main__":
