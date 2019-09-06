@@ -1,5 +1,5 @@
 import re
-from setuptools import setup
+from setuptools import setup, find_packages
 
 description = 'Version-bump your software with a single command!'
 
@@ -11,12 +11,12 @@ long_description = re.sub(
 
 setup(
     name='bumpv',
-    version='0.1.0',
+    version='0.0.0',
     url='https://github.com/kylie-a/bumpv',
     author='Kylie Auld',
     author_email='kylie.a@protonmail.com',
     license='MIT',
-    packages=['bumpv'],
+    packages=find_packages(),
     description=description,
     long_description=long_description,
     install_requires=[
