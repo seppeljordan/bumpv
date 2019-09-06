@@ -1,6 +1,8 @@
 # Changes
 
-**unreleased** **v0.6.3**
+**unreleased** 
+
+**v0.6.3**
 
 **v0.5.3**
 
@@ -34,10 +36,8 @@ changes in the configuration format. This release is fully backwards
 compatible to *v0.4.1*, however deprecates two uses that will be removed
 in a future version.
 
-  - New feature: [Part specific
-    configuration](#part-specific-configuration)
-  - New feature: [File specific
-    configuration](#file-specific-configuration)
+  - New feature: [Part specific configuration](#part-specific-configuration)
+  - New feature: [File specific configuration](#file-specific-configuration)
   - New feature: parse option can now span multiple line (allows to
     comment complex regular expressions. See [re.VERBOSE in the Python
     documentation](https://docs.python.org/library/re.html#re.VERBOSE)

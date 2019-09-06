@@ -2,7 +2,6 @@ import json
 
 import yaml
 
-from . import exceptions
 from .config import Configuration
 from .files import FileUpdater
 from .logging import (
@@ -43,8 +42,8 @@ class BumpClient:
                 new_version=self.new_version.serialize(),
             )
             self.logger.debug(f"COMMITTING w/ message: {message}")
-            self.vcs.commit(message)
-        if self.config.tag:
+            self.vcs.commit(message, dry_run)
+        if self.config.tag and not dry_run:
             self.logger.debug(f"GIT TAG: {self.new_version.get_tag()}")
             self.vcs.tag(self.new_version.get_tag())
 

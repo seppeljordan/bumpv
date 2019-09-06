@@ -32,9 +32,9 @@ def bump(part, verbose, allow_dirty, output, dry_run):
         click.echo(f"error attempting to bump the version: {err}")
         sys.exit(1)
     except exceptions.VCSCommandError as err:
-        click.echo(f"error attempting to run VCS command:\n\t{' '.join(err.command)}\n")
+        click.echo(f"error attempting to run VCS command:\n\n\t{' '.join(err.command)}\n")
         click.echo("Error message from VCS:\n")
-        click.echo(err.message.decode())
+        click.echo(err.message)
         sys.exit(1)
 
     output_func = getattr(client, output)

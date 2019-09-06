@@ -14,17 +14,23 @@ class BaseVCS(object):
     _COMMIT_COMMAND = []
 
     @classmethod
-    def commit(cls, message):
-        with NamedTemporaryFile('wb', delete=False) as commit_file:
-            commit_file.write(message.encode('utf-8'))
+    def commit(cls, message: str, dry_run=False):
+        if not dry_run:
+            with NamedTemporaryFile('wb', delete=False) as commit_file:
+                commit_file.write(message.encode('utf-8'))
 
-        command = cls._COMMIT_COMMAND + [commit_file.name]
-        try:
-            subprocess.check_output(command)
-        except subprocess.CalledProcessError as err:
-            raise VCSCommandError(err.output, command)
-        finally:
-            os.unlink(commit_file.name)
+            command = cls._COMMIT_COMMAND + [commit_file.name]
+            try:
+                subprocess.check_output(
+                    command,
+                    stderr=subprocess.PIPE,
+                )
+            except subprocess.CalledProcessError as err:
+                raise VCSCommandError(err.output.decode(), command)
+            finally:
+                os.unlink(commit_file.name)
+        else:
+            logger.info(f"Not doing commit during dry run. Commit message would be:\n\n\t{message}")
 
     @classmethod
     def is_usable(cls):

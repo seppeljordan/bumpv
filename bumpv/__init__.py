@@ -1,7 +1,9 @@
 import sys
 
 from .cli import bumpv
-from .client import BumpClient
+from .client import BumpClient, exceptions
+from .client.config import Configuration
+from .client.versioning import Version
 
 __VERSION__ = '0.6.8'
 
