@@ -17,23 +17,22 @@ logger = get_logger()
 
 class FileUpdater:
     def __init__(self, config: Configuration, current_version: Version, new_version: Version):
+        self.config = config
         self.paths = config.files()
         self.current_version = current_version
         self.new_version = new_version
-        self.search = config.search
         self.context = {
             "current_version": current_version.serialize(),
             "new_version": new_version.serialize(),
         }
-        self.search_for: str = config.search.format(**self.context)
-        self.replace_with: str = config.replace.format(**self.context)
 
     def _validate(self):
         """
         Checks that all files listed in the config have matching text to replace
         """
-        serialized_version = self.search.format(**self.context)
         for path in self.paths:
+            options = self.config.get_file_section(path)
+            serialized_version = options["search"].format(**self.context)
             if not self._contains(path):
                 raise InvalidTargetFile(
                     f"Did not find '{self.current_version}' or '{serialized_version}' in file {path}"
@@ -41,9 +40,10 @@ class FileUpdater:
         return True
 
     def _contains(self, path):
-        serialized_version = self.search.format(**self.context)
         try:
             with io.open(path, 'rb') as f:
+                options = self.config.get_file_section(path)
+                serialized_version = options["search"].format(**self.context)
                 search_lines = serialized_version.splitlines()
                 lookbehind = []
 
@@ -67,13 +67,17 @@ class FileUpdater:
         with io.open(path, 'rb') as f:
             file_content_before = f.read().decode('utf-8')
 
-        file_content_after = file_content_before.replace(self.search_for, self.replace_with)
+        options = self.config.get_file_section(path)
+        search_for = options["search"].format(**self.context)
+        replace_with = options["replace"].format(**self.context)
+
+        file_content_after = file_content_before.replace(search_for, replace_with)
 
         if file_content_before == file_content_after:
             # TODO expose this to be configurable
             file_content_after = file_content_before.replace(
                 self.current_version.original,
-                self.replace_with,
+                replace_with,
             )
 
         if file_content_before != file_content_after:

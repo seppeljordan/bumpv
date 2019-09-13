@@ -53,9 +53,15 @@ class Configuration:
         self.tag_name = bumpv_section.get("tag_name")
         self.parse = bumpv_section.get("parse")
         self.serialize = bumpv_section.get("serialize").split("\n")
-        self.search = bumpv_section.get("search")
-        self.replace = bumpv_section.get("replace")
         self.message = bumpv_section.get("message")
+
+        self.file_options = {}
+        for file in self.files():
+            section = self.get_file_section(file)
+            self.file_options[file] = {
+                "search": section.get("search", "{current_version}"),
+                "replace": section.get("replace", "{new_version}")
+            }
 
     def __repr__(self):
         return f"<bumpv.Configuration: {self.file_path}>"
