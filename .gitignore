@@ -6,3 +6,5 @@ lib/
 .Python
 bumpv.egg-info/
 .pytest_cache
+__pycache__
+*~

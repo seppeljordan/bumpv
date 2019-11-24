@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import io
 from difflib import unified_diff
 
@@ -7,9 +5,8 @@ from .exceptions import InvalidTargetFile
 from ..logging import get_logger
 
 from typing import TYPE_CHECKING
-if TYPE_CHECKING:
-    from ..config import Configuration
-    from ..versioning import Version
+from ..config import Configuration
+from ..versioning import Version
 
 
 logger = get_logger()
