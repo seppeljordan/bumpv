@@ -3,11 +3,8 @@ from setuptools import setup, find_packages
 
 description = 'Version-bump your software with a single command!'
 
-long_description = re.sub(
-  "\`(.*)\<#.*\>\`\_",
-  r"\1",
-  str(open('README.md', 'rb').read()).replace(description, '')
-)
+with open('README.rst') as handle:
+    long_description = handle.read()
 
 setup(
     name='bumpv',
